@@ -1,18 +1,20 @@
+import os
+
 # --- 服务器配置 ---
 HOST = "0.0.0.0"
-PORT = 8000
+PORT = 80
 
 # --- 智谱 API 配置 ---
 ZHIPU_BASE_URL = "https://open.bigmodel.cn/api/paas/v4/" 
 ZHIPU_MODEL = "glm-4-flash"
 
-# 👇👇👇 把你的智谱 API KEY 粘贴在下面这行引号里 👇👇👇
-ZHIPU_API_KEY = "0ea39df8f8014506ae273e0299d77614.uJBIG0y9Wg4Mw3V9" 
+# 🌟 关键：优先读取云端的 ZHIPU_API_KEY，如果没有，用后面的备用 key
+ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY", "你本地测试用的Key填这里")
 
 # --- AI发言节奏控制 ---
-AI_SPEAK_INTERVAL_MIN = 2    # AI间隔最短几秒
-AI_SPEAK_INTERVAL_MAX = 6    # AI间隔最长几秒
-AI_COOLDOWN_SECONDS = 10     # 同一个AI说完话后必须等几秒才能再说
+AI_SPEAK_INTERVAL_MIN = 2
+AI_SPEAK_INTERVAL_MAX = 6
+AI_COOLDOWN_SECONDS = 10
 
 # --- 聊天室规则 ---
 MAX_MESSAGE_LENGTH = 60
