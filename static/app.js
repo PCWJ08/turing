@@ -6,7 +6,7 @@ const counterEl = document.getElementById('counter');
 const meNameEl = document.getElementById('me-name');
 
 // 🌟 改动：直接修改输入框提示词
-inputEl.placeholder = "说点什么，激活吵架...";
+inputEl.placeholder = "院长，请说点什么...";
 
 // 🌟 改动：名字锁定机制
 let savedName = localStorage.getItem("my_chat_name");
