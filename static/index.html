@@ -17,17 +17,20 @@
   </div>
 
   <div id="messages">
-    <div class="empty">等待连接…</div>
+    <div class="msg" id="sys-welcome">
+      <span class="sender" style="color: #666;">[系统]</span>
+      <span class="content" style="color: #888;">警告：你已进入重度精神科，请尝试与患者交流...</span>
+    </div>
   </div>
 
   <div class="input-row">
-    <input id="input" type="text" maxlength="60" placeholder="输入你的发言..." autocomplete="off">
+    <input id="input" type="text" maxlength="60" placeholder="院长，请对他们说点什么..." autocomplete="off">
     <button id="send-btn" disabled>发送</button>
   </div>
 
   <div class="meta-row">
     <span id="status">未连接</span>
-    <span style="color: #b026ff; font-weight: bold; font-size: 12px; letter-spacing: 2px; text-shadow: 0 0 5px rgba(176, 38, 255, 0.5);">Designed by WeiDengLu</span>
+    <span style="color: #a200ff; font-weight: bold; font-size: 12px; letter-spacing: 2px; text-shadow: 0 0 5px rgba(149, 32, 218, 0.5);">Designed by 未登录</span>
     <span id="counter">0 / 60</span>
   </div>
 </div>

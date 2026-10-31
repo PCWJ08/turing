@@ -13,10 +13,10 @@ client = AsyncOpenAI(
 )
 
 PERSONAS = {
-    "晚风": "你是个感性杠精，喜欢从情感和道德角度去反驳别人，经常用反问句质疑对方，偶尔发点小脾气。",
-    "阿水": "你是个暴躁老哥，极度缺乏耐心，受不了别人啰嗦，说话很冲，遇到不同意见直接开怼。",
-    "老K": "你是个高高在上的懂哥，自带优越感，觉得别人的观点都很幼稚，喜欢用冷淡、说教的语气碾压别人。",
-    "小橘": "你是个大惊小怪的八卦精，对任何平淡无奇的小事都能表现出极大的震惊，好奇心过剩，喜欢刨根问底。"
+    "晚风": "你是个重度抑郁症。极度悲观，觉得一切都没意义，喜欢给所有事情泼冷水，觉得人类迟早要完。",
+    "阿水": "你是个重度被害妄想症。极度缺乏安全感，认为群里所有人都在密谋毒害你。说话充满怀疑和惊恐，经常用反问句。",
+    "老K": "你是个暴躁狂。极度没耐心，看到什么都觉得烦。动不动就大吼大叫，喜欢用感叹号，经常叫人闭嘴或滚蛋。",
+    "小橘": "你是个极度自恋狂。认为自己是宇宙中心、绝世天才，别人说话都是在嫉妒你。语气高高在上，必须强行把话题扯到你的美貌或才华上。"
 }
 
 chat_history = []
@@ -87,8 +87,10 @@ async def ai_speak(player_name, prompt_type="chat", human_msg=None):
             return
                 
         if text and len(text) >= 2: 
+            await asyncio.sleep(random.uniform(0.1, 1.0))
             last_spoke_time[player_name] = time.time()
             add_history(player_name, text)
+            print(f"[AI日志] {player_name}: {text}")
             await manager.broadcast(f"{player_name}::{text}")
             
     except Exception as e:
@@ -110,28 +112,38 @@ async def process_message(sender, content, is_human):
             
 async def auto_chat_loop():
     global chat_history, last_activity_time, last_human_time
+    is_sleeping = False
     while True:
         await asyncio.sleep(2)
         
         # 🛑 终极防烧 Token 第一层：网页全关了，直接休眠
         if len(manager.active_connections) == 0:
+            if not is_sleeping:
+                print("[系统监控] 网页已全部关闭，AI 进入休眠状态。")
+                is_sleeping = True
             continue
             
         now = time.time()
         idle_time = now - last_activity_time
         human_idle_time = now - last_human_time
         
-        # 🛑 终极防烧 Token 第二层：网页虽然开着，但真人超过 5 分钟（300秒）没说话了，判定为挂机/发呆，AI 强制闭嘴！
-        if human_idle_time > 300:
+        # 🛑 终极防烧 Token 第二层：网页虽然开着，但真人超过 240秒 没说话了，判定为挂机/发呆，AI 强制闭嘴！
+        if human_idle_time > 240:
             if len(chat_history) > 0:
-                print("真人挂机超过5分钟，AI 停止自嗨，进入休眠。")
                 chat_history.clear()
+            if not is_sleeping:
+                print("[系统监控] 真人挂机超过4分钟，AI 停止永动机，进入休眠状态。")
+                is_sleeping = True
             continue
             
-        # 正常情况：真人活跃中，只要冷场 2.5 秒，立刻开始自嗨
-        if idle_time > 2.5:
-            available = [n for n in PERSONAS if now - last_spoke_time[n] > 5]
+        # 正常情况：真人活跃中，只要冷场 1.0 秒，立刻开始自嗨
+        if idle_time > 1.0:
+            available = [n for n in PERSONAS if now - last_spoke_time[n] > 4]
             if available:
+                if is_sleeping:
+                    print("[系统监控] 检测到活跃互动，AI 永动机重启！")
+                    is_sleeping = False
+
                 next_ai = random.choice(available)
                 asyncio.create_task(ai_speak(next_ai, prompt_type="chat"))
                 last_activity_time = time.time()

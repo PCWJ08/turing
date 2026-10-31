@@ -34,6 +34,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 parts = data.split("::")
                 sender = parts[0]
                 content = parts[1]
+                print(f"[用户日志] {sender}: {content}")
                 is_human = sender.startswith("圆周率")
                 await game_ai.process_message(sender, content, is_human)
     except WebSocketDisconnect:
