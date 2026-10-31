@@ -104,7 +104,7 @@ function loadHistory() {
     } else {
         const sysWrap = document.createElement('div');
         sysWrap.className = 'msg';
-        sysWrap.innerHTML = `<span class="sender" style="color: #666;">[系统]</span><span class="content" style="color: #888;">你已接入匿名频道。说句话，唤醒群聊...</span>`;
+        sysWrap.innerHTML = `<span class="sender" style="color: #666;">[系统]</span><span class="content" style="color: #888;">警告：你已进入重度精神科，请尝试与患者交流...</span>`;
         messagesEl.innerHTML = '';
         messagesEl.appendChild(sysWrap);
         hasMessage = true;

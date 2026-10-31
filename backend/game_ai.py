@@ -87,7 +87,7 @@ async def ai_speak(player_name, prompt_type="chat", human_msg=None):
             return
                 
         if text and len(text) >= 2: 
-            await asyncio.sleep(random.uniform(0.1, 1.0))
+            await asyncio.sleep(random.uniform(0.1, 0.8))
             last_spoke_time[player_name] = time.time()
             add_history(player_name, text)
             print(f"[AI日志] {player_name}: {text}")
