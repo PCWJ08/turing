@@ -90,7 +90,7 @@ async def ai_speak(player_name, prompt_type="chat", human_msg=None):
             await asyncio.sleep(random.uniform(0.1, 0.8))
             last_spoke_time[player_name] = time.time()
             add_history(player_name, text)
-            print(f"[AI日志] {player_name}: {text}",flush=True)
+            print(f"[🤖 AI日志] {player_name}: {text}",flush=True)
             await manager.broadcast(f"{player_name}::{text}")
             
     except Exception as e:
@@ -119,7 +119,7 @@ async def auto_chat_loop():
         # 🛑 终极防烧 Token 第一层：网页全关了，直接休眠
         if len(manager.active_connections) == 0:
             if not is_sleeping:
-                print("[系统监控] 网页已全部关闭，AI 进入休眠状态。",flush=True)
+                print("[🛑 系统监控] 网页已全部关闭，AI 进入休眠状态。",flush=True)
                 is_sleeping = True
             continue
             
@@ -132,7 +132,7 @@ async def auto_chat_loop():
             if len(chat_history) > 0:
                 chat_history.clear()
             if not is_sleeping:
-                print("[系统监控] 真人挂机超过4分钟，AI 停止永动机，进入休眠状态。",flush=True)
+                print("[💤 系统监控] 真人挂机超过4分钟，AI 停止永动机，进入休眠状态。",flush=True)
                 is_sleeping = True
             continue
             
@@ -141,7 +141,7 @@ async def auto_chat_loop():
             available = [n for n in PERSONAS if now - last_spoke_time[n] > 4]
             if available:
                 if is_sleeping:
-                    print("[系统监控] 检测到活跃互动，AI 永动机重启！",flush=True)
+                    print("[🔥 系统监控] 检测到活跃互动，AI 永动机重启！",flush=True)
                     is_sleeping = False
 
                 next_ai = random.choice(available)
