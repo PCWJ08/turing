@@ -5,9 +5,13 @@ const statusEl = document.getElementById('status');
 const counterEl = document.getElementById('counter');
 const meNameEl = document.getElementById('me-name');
 
-// 默认名字，等后端发来真实序号后再更新
-let myName = '圆周率';
-meNameEl.textContent = myName;
+// 🌟 改动：直接修改输入框提示词
+inputEl.placeholder = "说点什么，激活吵架...";
+
+// 🌟 改动：名字锁定机制
+let savedName = localStorage.getItem("my_chat_name");
+let myName = savedName || '圆周率';
+if (savedName) meNameEl.textContent = savedName;
 
 let ws = null;
 let hasMessage = false;
@@ -24,12 +28,13 @@ function connect() {
   ws.onmessage = (event) => {
     const text = event.data;
     
-    // 🌟 核心：拦截系统分配的专属名字
     if (text.startsWith("SYSTEM_INIT::")) {
-        const parts = text.split("::");
-        myName = parts[1];
-        // 更新右上角的显示
-        meNameEl.textContent = myName;
+        if (!savedName) {
+            const parts = text.split("::");
+            myName = parts[1];
+            localStorage.setItem("my_chat_name", myName);
+            meNameEl.textContent = myName;
+        }
         return;
     }
 
@@ -39,7 +44,9 @@ function connect() {
       sender = parts[0];
       content = parts.slice(1).join('::');
     }
+    
     appendMessage(sender, content);
+    saveToLocal(sender, content); 
   };
 
   ws.onclose = () => {
@@ -61,7 +68,6 @@ function appendMessage(sender, content) {
     const s = document.createElement('span');
     s.className = 'sender';
     s.textContent = sender;
-    // 只要名字以圆周率开头，全部高亮绿色
     if (sender.startsWith('圆周率')) s.style.color = '#00ffaa';
     wrap.appendChild(s);
   }
@@ -76,11 +82,39 @@ function appendMessage(sender, content) {
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+// 🌟 改动：本地存档与读取
+function saveToLocal(sender, content) {
+    let history = JSON.parse(localStorage.getItem("chat_history") || "[]");
+    history.push({ sender, content, time: Date.now() });
+    if (history.length > 60) history.shift(); 
+    localStorage.setItem("chat_history", JSON.stringify(history));
+}
+
+function loadHistory() {
+    let history = JSON.parse(localStorage.getItem("chat_history") || "[]");
+    const now = Date.now();
+    history = history.filter(msg => now - msg.time < 2 * 60 * 60 * 1000);
+    
+    if (history.length > 0) {
+        messagesEl.innerHTML = '';
+        hasMessage = true;
+        history.forEach(msg => {
+            appendMessage(msg.sender, msg.content);
+        });
+    } else {
+        const sysWrap = document.createElement('div');
+        sysWrap.className = 'msg';
+        sysWrap.innerHTML = `<span class="sender" style="color: #666;">[系统]</span><span class="content" style="color: #888;">你已接入匿名频道。说句话，唤醒群聊...</span>`;
+        messagesEl.innerHTML = '';
+        messagesEl.appendChild(sysWrap);
+        hasMessage = true;
+    }
+}
+
 function send() {
   const val = inputEl.value.trim();
   if (!val) return;
   if (ws && ws.readyState === WebSocket.OPEN) {
-    // 发送当前分配到的名字
     ws.send(myName + '::' + val);
     inputEl.value = '';
     updateCounter();
@@ -96,4 +130,5 @@ sendBtn.addEventListener('click', send);
 inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') send(); });
 inputEl.addEventListener('input', updateCounter);
 
+loadHistory();
 connect();
