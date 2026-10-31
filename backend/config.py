@@ -8,8 +8,7 @@ ZHIPU_BASE_URL = "https://open.bigmodel.cn/api/paas/v4/"
 ZHIPU_MODEL = "glm-4-flash"
 
 # 注意这里：优先去云端读 Key，本地读不到就用空字符串
-ZHIPU_API_KEY = "0ea39df8f8014506ae273e0299d77614.uJBIG0y9Wg4Mw3V9"
-# os.getenv("ZHIPU_API_KEY", "")
+ZHIPU_API_KEY = os.getenv("ZHIPU_API_KEY", "")
 
 # AI节奏控制
 AI_SPEAK_INTERVAL_MIN = 2    # AI最短多久说一句话
