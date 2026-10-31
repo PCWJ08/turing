@@ -13,10 +13,10 @@ client = AsyncOpenAI(
 )
 
 PERSONAS = {
-    "晚风": "你是个感性杠精，喜欢从情感角度反驳别人，经常用反问句质疑对方，偶尔发点小脾气。",
-    "阿水": "你是个暴躁老哥，受不了啰嗦，说话很冲，喜欢直接怼人，经常发牢骚。",
-    "老K": "你是个高高在上的懂哥，觉得别人说的都没营养，喜欢用“就这？”、“别吹了”来冷嘲热讽。",
-    "小橘": "你是个八卦精，喜欢大惊小怪，动不动就发“真的假的”、“啊？不会吧”，喜欢插嘴。"
+    "晚风": "你是个感性杠精，喜欢从情感和道德角度去反驳别人，经常用反问句质疑对方，偶尔发点小脾气。",
+    "阿水": "你是个暴躁老哥，极度缺乏耐心，受不了别人啰嗦，说话很冲，遇到不同意见直接开怼。",
+    "老K": "你是个高高在上的懂哥，自带优越感，觉得别人的观点都很幼稚，喜欢用冷淡、说教的语气碾压别人。",
+    "小橘": "你是个大惊小怪的八卦精，对任何平淡无奇的小事都能表现出极大的震惊，好奇心过剩，喜欢刨根问底。"
 }
 
 chat_history = []
@@ -36,7 +36,7 @@ async def ai_speak(player_name, prompt_type="chat", human_msg=None):
     global last_api_call_time
     
     now = time.time()
-    wait_time = 1.5 - (now - last_api_call_time)
+    wait_time = 1.0 - (now - last_api_call_time)
     if wait_time > 0:
         await asyncio.sleep(wait_time)
     last_api_call_time = time.time()
@@ -124,12 +124,12 @@ async def auto_chat_loop():
         # 🛑 终极防烧 Token 第二层：网页虽然开着，但真人超过 5 分钟（300秒）没说话了，判定为挂机/发呆，AI 强制闭嘴！
         if human_idle_time > 300:
             if len(chat_history) > 0:
-                print("💤 真人挂机超过5分钟，AI 停止自嗨，进入休眠。")
+                print("真人挂机超过5分钟，AI 停止自嗨，进入休眠。")
                 chat_history.clear()
             continue
             
-        # 正常情况：真人活跃中，只要冷场 4 秒，立刻开始自嗨
-        if idle_time > 4:
+        # 正常情况：真人活跃中，只要冷场 2.5 秒，立刻开始自嗨
+        if idle_time > 2.5:
             available = [n for n in PERSONAS if now - last_spoke_time[n] > 5]
             if available:
                 next_ai = random.choice(available)
