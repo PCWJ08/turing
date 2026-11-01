@@ -95,7 +95,7 @@ async def ai_speak(player_name, prompt_type="chat", human_msg=None):
             
     except Exception as e:
         if "429" not in str(e):
-            print(f"[{player_name}] 报错: {e}",flush=True)
+            print(f"[❌ {player_name}] 报错: {e}",flush=True)
 
 async def process_message(sender, content, is_human):
     global last_activity_time, last_human_time
