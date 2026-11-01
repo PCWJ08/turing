@@ -94,20 +94,16 @@ function loadHistory() {
     let history = JSON.parse(localStorage.getItem("chat_history") || "[]");
     const now = Date.now();
     history = history.filter(msg => now - msg.time < 2 * 60 * 60 * 1000);
-    
+
+    // 🌟 每次加载先清空聊天记录区
+    messagesEl.innerHTML = '';
+    hasMessage = true;
+
+    // 🌟 如果本地有聊天记录，就直接渲染出来
     if (history.length > 0) {
-        messagesEl.innerHTML = '';
-        hasMessage = true;
         history.forEach(msg => {
             appendMessage(msg.sender, msg.content);
         });
-    } else {
-        const sysWrap = document.createElement('div');
-        sysWrap.className = 'msg';
-        sysWrap.innerHTML = `<span class="sender" style="color: #666;">[系统]</span><span class="content" style="color: #888;">警告：你已进入重度精神科，请尝试与患者交流...</span>`;
-        messagesEl.innerHTML = '';
-        messagesEl.appendChild(sysWrap);
-        hasMessage = true;
     }
 }
 
