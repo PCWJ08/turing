@@ -10,7 +10,6 @@ COPY . .
 
 WORKDIR /app/backend
 
-# Render 默认分配的端口通常是 10000
 EXPOSE 80
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
