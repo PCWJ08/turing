@@ -109,39 +109,40 @@ async def process_message(sender, content, is_human):
         responders = random.sample(list(PERSONAS.keys()), 3)
         for ai in responders:
             asyncio.create_task(ai_speak(ai, prompt_type="reply_human", human_msg=content))
-            
 async def auto_chat_loop():
     global chat_history, last_activity_time, last_human_time
     is_sleeping = False
+    
     while True:
         await asyncio.sleep(2)
         
-        # 🛑 终极防烧 Token 第一层：网页全关了，直接休眠
-        if len(manager.active_connections) == 0:
-            if not is_sleeping:
-                print("[🛑 系统日志] 网页已全部关闭，AI 进入休眠状态。",flush=True)
-                is_sleeping = True
-            continue
-            
         now = time.time()
         idle_time = now - last_activity_time
         human_idle_time = now - last_human_time
-        
-        # 🛑 终极防烧 Token 第二层：网页虽然开着，但真人超过 240秒 没说话了，判定为挂机/发呆，AI 强制闭嘴！
-        if human_idle_time > 240:
+
+        # 逻辑 1：物理休眠机制（网页全关 或 挂机超4分钟）
+        is_no_connection = len(manager.active_connections) == 0
+        is_human_idle = human_idle_time > 240  # 240秒即4分钟
+
+        if is_no_connection or is_human_idle:
             if len(chat_history) > 0:
                 chat_history.clear()
+            
             if not is_sleeping:
-                print("[💤 系统日志] 真人挂机超过4分钟，AI 停止永动机，进入休眠状态。",flush=True)
+                if is_no_connection:
+                    print("[🛑 系统日志] 网页已全部关闭，AI 进入休眠状态。", flush=True)
+                else:
+                    print("[💤 系统日志] 真人挂机超过4分钟，AI 停止永动机，进入休眠。", flush=True)
                 is_sleeping = True
             continue
-            
-        # 正常情况：真人活跃中，只要冷场 1.0 秒，立刻开始自嗨
-        if idle_time > 1.0:
+
+        # 逻辑 2：正常的永动机模式
+        if idle_time > 1.5:
             available = [n for n in PERSONAS if now - last_spoke_time[n] > 4]
+            
             if available:
                 if is_sleeping:
-                    print("[🔥 系统日志] 检测到活跃互动，AI 永动机重启！",flush=True)
+                    print("[🔥 系统日志] 检测到活跃互动，AI 永动机重启！", flush=True)
                     is_sleeping = False
 
                 next_ai = random.choice(available)
