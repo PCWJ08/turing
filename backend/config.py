@@ -1,7 +1,8 @@
 import os
 
 HOST = "0.0.0.0"
-PORT = 80
+# 优先读取 Render 分配的端口，读不到就用 8000
+PORT = int(os.getenv("PORT", 8000)) 
 
 # 智谱 API 配置
 ZHIPU_BASE_URL = "https://open.bigmodel.cn/api/paas/v4/" 
