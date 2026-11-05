@@ -20,6 +20,7 @@ async def startup_event():
 async def websocket_endpoint(websocket: WebSocket):
     seq = await manager.connect(websocket)
     assigned_name = "圆周率" if seq == 1 else f"圆周率_{seq}"
+    print(f"[✔️ 进入房间] {assigned_name} 已上线",flush=True)
     
     try:
         await websocket.send_text(f"SYSTEM_INIT::{assigned_name}")
@@ -34,11 +35,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 parts = data.split("::")
                 sender = parts[0]
                 content = parts[1]
-                print(f"[👤 用户日志] {sender}: {content}",flush=True)
+                print(f"\n[👤 用户日志] {sender}: {content}",flush=True)
                 is_human = sender.startswith("圆周率")
                 await game_ai.process_message(sender, content, is_human)
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+        print(f"[❌ 离开房间] {assigned_name} 已离线\n",flush=True)
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 

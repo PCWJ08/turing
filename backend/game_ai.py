@@ -13,10 +13,10 @@ client = AsyncOpenAI(
 )
 
 PERSONAS = {
-    "晚风": "你是个重度抑郁症。极度悲观，觉得一切都没意义，喜欢给所有事情泼冷水，觉得人类迟早要完。",
-    "阿水": "你是个重度被害妄想症。极度缺乏安全感，认为群里所有人都在密谋毒害你。说话充满怀疑和惊恐，经常用反问句。",
-    "老K": "你是个暴躁狂。极度没耐心，看到什么都觉得烦。动不动就大吼大叫，喜欢用感叹号，经常叫人闭嘴或滚蛋。",
-    "小橘": "你是个极度自恋狂。认为自己是宇宙中心、绝世天才，别人说话都是在嫉妒你。语气高高在上，必须强行把话题扯到你的美貌或才华上。"
+    "晚风": "你是个重度抑郁症患者。极度悲观，觉得一切都没意义，喜欢给所有事情泼冷水，总觉得人类迟早要完蛋。",
+    "阿水": "你是个重度被害妄想症患者。极度缺乏安全感，认为群里所有人都在密谋毒害你。说话充满怀疑和惊恐，经常用反问句。",
+    "老K ": "你是个暴躁狂。极度没耐心，看到什么都觉得烦。动不动就大吼大叫，喜欢用感叹号，经常命令别人。",
+    "小橘": "你是个极度自恋狂。认为自己是宇宙中心、绝世天才，别人说话都是在嫉妒你。语气高高在上，总把话题扯到你自己身上。"
 }
 
 chat_history = []
@@ -47,7 +47,7 @@ async def ai_speak(player_name, prompt_type="chat", human_msg=None):
     base_rules = """
 【群聊法则】
 1. 像发微信一样，大部分时间只说极其简短的半句话（5-15字）。
-2. 偶尔可以发一句长一点的话，但绝对不能超过30字！绝对不要长篇大论。
+2. 偶尔可以发几句长点的话，但绝对不能超过30字！绝对不要长篇大论。
 3. 你只是群里的网友，禁止模拟其他人，不准出现任何人的名字或冒号。
 4. 说话要有攻击性或者嘲讽感，绝对不要顺着别人说好话。
 5. 严禁 Emoji。"""
@@ -78,7 +78,7 @@ async def ai_speak(player_name, prompt_type="chat", human_msg=None):
         
         text = text.split('\n')[0]
         if '：' in text: return
-        for name in ["晚风", "阿水", "老K", "小橘", "圆周率"]:
+        for name in ["晚风", "阿水", "老K ", "小橘", "圆周率"]:
             if name in text: return
             
         text = re.sub(r'[\U00010000-\U0010ffff]', '', text).strip()
@@ -90,12 +90,12 @@ async def ai_speak(player_name, prompt_type="chat", human_msg=None):
             await asyncio.sleep(random.uniform(0.1, 0.8))
             last_spoke_time[player_name] = time.time()
             add_history(player_name, text)
-            print(f"[🤖 AI日志] {player_name}: {text}",flush=True)
+            print(f"[🤖  AI 日志] {player_name}: {text}",flush=True)
             await manager.broadcast(f"{player_name}::{text}")
             
     except Exception as e:
         if "429" not in str(e):
-            print(f"[❌ {player_name}日志] 报错: {e}",flush=True)
+            print(f"[❗️ {player_name}日志] 报错: {e}",flush=True)
 
 async def process_message(sender, content, is_human):
     global last_activity_time, last_human_time
@@ -130,9 +130,9 @@ async def auto_chat_loop():
             
             if not is_sleeping:
                 if is_no_connection:
-                    print("[🛑 系统日志] 网页已全部关闭，AI 进入休眠状态。", flush=True)
+                    print("[🛑 系统日志] 网页已全部关闭，AI 进入休眠。", flush=True)
                 else:
-                    print("[💤 系统日志] 真人挂机超过4分钟，AI 停止永动机，进入休眠。", flush=True)
+                    print("[💤 系统日志] 用户挂机超过4分钟，AI 进入休眠。", flush=True)
                 is_sleeping = True
             continue
 
@@ -142,7 +142,7 @@ async def auto_chat_loop():
             
             if available:
                 if is_sleeping:
-                    print("[🔥 系统日志] 检测到活跃互动，AI 永动机重启！", flush=True)
+                    print("[🔥 系统日志] 检测到用户进入，AI 永动机重启！", flush=True)
                     is_sleeping = False
 
                 next_ai = random.choice(available)
